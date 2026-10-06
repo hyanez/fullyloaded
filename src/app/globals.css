@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+/*
+ * Tailwind theme = the Fully Loaded token contract, nothing else.
+ * Every default namespace we use is reset to `initial` so Tailwind's stock
+ * palette, fonts, type scale, radii and breakpoints don't exist in this repo.
+ */
+@theme {
+  /* ---- Color (verbatim from the guide) ---- */
+  --color-*: initial;
+  --color-bg: #0D0505;
+  --color-surface: #120707;
+  --color-modal: #150B0B;
+  --color-input: #1A0F0F;
+  --color-text: #FFF7EE;
+  --color-muted: #BFAFA7;
+  --color-accent: #FF003C;
+  --color-status: #A7F3D0;
+  --color-low: #6B5A52; /* not readable body copy */
+  --color-action-aa: #C90030;
+  --color-error: #FFF7EE;
+  --color-focus: #FFF7EE;
+  --color-transparent: transparent;
+  /* Hairline colors (the guide's --border* values, exposed for border-* utilities) */
+  --color-line: rgb(255 247 238 / 15%);
+  --color-line-strong: rgb(255 247 238 / 20%);
+  --color-line-accent: rgb(255 0 60 / 20%);
+  --color-accent-emphasis: rgb(255 0 60 / 40%);
+
+  /* ---- Fonts (loaded via next/font in layout.tsx) ---- */
+  --font-*: initial;
+  --font-display: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  --font-body: var(--font-inter), "Inter", sans-serif;
+
+  /* ---- Type roles: text-<role> sets size + line-height (+ tracking) ---- */
+  --text-*: initial;
+  --text-section: var(--type-section);
+  --text-section--line-height: var(--line-section);
+  --text-section--letter-spacing: -1.2px;
+  --text-title: var(--type-title);
+  --text-title--line-height: var(--line-title);
+  --text-card: var(--type-card);
+  --text-card--line-height: var(--line-card);
+  --text-legal: var(--type-legal);
+  --text-legal--line-height: var(--line-legal);
+  --text-accordion: var(--type-accordion);
+  --text-accordion--line-height: var(--line-accordion);
+  --text-body: var(--type-body);
+  --text-body--line-height: var(--line-body);
+  --text-small: var(--type-small);
+  --text-small--line-height: var(--line-small);
+  --text-utility: var(--type-utility);
+  --text-utility--line-height: var(--line-utility);
+  --text-utility--letter-spacing: 1px;
+  --text-kicker: var(--type-kicker);
+  --text-kicker--line-height: var(--line-kicker);
+  --text-kicker--letter-spacing: 1.8px;
+  /* Page-specific hero overrides (desktop values; mobile handled per page) */
+  --text-hero-events: var(--hero-events);
+  --text-hero-events--line-height: var(--hero-events-line);
+  --text-hero-events--letter-spacing: var(--hero-events-tracking);
+  --text-hero-faq: var(--hero-faq);
+  --text-hero-faq--line-height: var(--hero-faq-line);
+  --text-hero-faq--letter-spacing: var(--hero-faq-tracking);
+
+  --tracking-*: initial;
+  --tracking-section: -1.2px;
+  --tracking-kicker: 1.8px;
+  --tracking-nav: 1px;
+  --tracking-button: 1.2px;
+
+  /* ---- Radius ---- */
+  --radius-*: initial;
+  --radius-input: 8px;
+  --radius-small: 12px;
+  --radius-panel: 16px;
+  --radius-modal: 20px;
+  --radius-large: 24px;
+  --radius-pill: 999px;
+
+  /* ---- Containers (max-w-legal, max-w-faq) ---- */
+  --container-*: initial;
+  --container-legal: 800px;
+  --container-faq: 920px;
+  --container-modal: 540px;
+
+  /* ---- Breakpoints (mobile-first: base <768, md 768–1199, lg ≥1200) ---- */
+  --breakpoint-*: initial;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1200px;
+
+  /* Spacing stays on Tailwind's 4px multiplier; see AGENTS.md for the allowed steps. */
+}
+
+@layer base {
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: var(--type-body);
+    line-height: 1.5;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+  p { margin: 0; }
+  button, input, select, textarea { font: inherit; }
+  img, svg { display: block; max-width: 100%; }
+  button, a, input, select, textarea { touch-action: manipulation; }
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 4px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Site container: 1280px max, fluid gutters (80 / 40 / 20). Replaces Tailwind's container. */
+@utility container {
+  width: min(var(--container), calc(100% - 2 * var(--gutter)));
+  margin-inline: auto;
+}

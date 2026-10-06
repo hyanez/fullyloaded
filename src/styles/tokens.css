@@ -1,0 +1,60 @@
+/*
+ * Fully Loaded — token contract
+ * Source: Figma "FL" → "Fully Loaded — Design foundations & component guide"
+ *         (node 523:4415, "Copyable implementation blocks" 523:5026)
+ *
+ * This file holds the guide's tokens that are NOT Tailwind theme namespaces.
+ * Tokens whose names collide with Tailwind namespaces (--color-*, --font-*,
+ * --radius-*, --container-*, --tracking-*) are defined in globals.css @theme
+ * with the exact same names and values, so `var(--color-bg)` etc. still work.
+ *
+ * Do not edit values here without updating the Figma guide first.
+ */
+:root {
+  /* Observed production values; semantic names proposed */
+  --border: 1px solid rgb(255 247 238 / 15%);
+  --border-strong: 1px solid rgb(255 247 238 / 20%);
+  --border-accent: 1px solid rgb(255 0 60 / 20%);
+  --accent-emphasis: rgb(255 0 60 / 40%);
+
+  --type-section: 48px;   --line-section: 52px;
+  --type-title: 32px;     --line-title: 36px;
+  --type-card: 24px;      --line-card: 28px;
+  --type-legal: 20px;     --line-legal: 26px;
+  --type-accordion: 18px; --line-accordion: 24px;
+  --type-body: 16px;      --line-body: 24px;
+  --type-small: 15px;     --line-small: 22px;
+  --line-prose: 24px;
+  --type-utility: 13px;   --line-utility: 18px;
+  --type-kicker: 12px;    --line-kicker: 16px;
+
+  --space-8: 8px;   --space-12: 12px;
+  --space-16: 16px; --space-20: 20px;
+  --space-24: 24px; --space-32: 32px;
+  --space-40: 40px; --space-48: 48px;
+  --space-56: 56px; --space-64: 64px;
+  --space-80: 80px; --space-120: 120px;
+
+  --container: 1280px;
+  --gutter: 80px;
+
+  /* Page-specific observed hero overrides */
+  --hero-events: 112px; --hero-events-line: .88;
+  --hero-events-tracking: -.04em;
+  --hero-faq: 96px; --hero-faq-line: .9;
+  --hero-faq-tracking: -3px;
+
+  /* Proposed accessibility / state values */
+  --border-control: 1px solid var(--color-muted);
+}
+
+/* Proposed responsive behavior */
+@media (max-width: 1199px) {
+  :root { --gutter: 40px; }
+}
+@media (max-width: 767px) {
+  :root {
+    --gutter: 20px;
+    --type-section: 32px; --line-section: 36px;
+  }
+}
