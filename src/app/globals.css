@@ -56,10 +56,24 @@
   --text-kicker: var(--type-kicker);
   --text-kicker--line-height: var(--line-kicker);
   --text-kicker--letter-spacing: 1.8px;
+  /* Mobile menu sheet links (Figma 764:1753): 48/1.15, same size at every width */
+  --text-menu: var(--type-menu);
+  --text-menu--line-height: var(--line-menu);
   /* Page-specific hero overrides (desktop values; mobile handled per page) */
   --text-hero-events: var(--hero-events);
   --text-hero-events--line-height: var(--hero-events-line);
   --text-hero-events--letter-spacing: var(--hero-events-tracking);
+  --text-hero-404: var(--hero-404);
+  --text-hero-404--line-height: var(--hero-404-line);
+  --text-hero-404--letter-spacing: var(--hero-404-tracking);
+  --text-hero-apply: var(--hero-apply);
+  --text-hero-apply--line-height: var(--hero-apply-line);
+  --text-hero-apply--letter-spacing: var(--hero-apply-tracking);
+  --text-contact: var(--type-contact);
+  --text-contact--line-height: var(--line-contact);
+  --text-label: var(--type-label);
+  --text-label--line-height: var(--line-label);
+  --text-label--letter-spacing: 1px;
   --text-hero-faq: var(--hero-faq);
   --text-hero-faq--line-height: var(--hero-faq-line);
   --text-hero-faq--letter-spacing: var(--hero-faq-tracking);
@@ -70,8 +84,19 @@
   --tracking-nav: 1px;
   --tracking-button: 1.2px;
 
+  /* ---- Elevation (form panel, Figma 425:918) ---- */
+  --shadow-panel: 0 16px 16px rgb(0 0 0 / 50%);
+
+  /* ---- Motion ---- */
+  --animate-nav-in: nav-in 200ms ease-out;
+  @keyframes nav-in {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+  }
+
   /* ---- Radius ---- */
   --radius-*: initial;
+  --radius-checkbox: 4px; /* Figma 771:776; not yet in the guide */
   --radius-input: 8px;
   --radius-small: 12px;
   --radius-panel: 16px;
@@ -128,4 +153,9 @@
 @utility container {
   width: min(var(--container), calc(100% - 2 * var(--gutter)));
   margin-inline: auto;
+}
+
+/* TODO: temporary landing hero height (3/4 of the viewport) until the real hero is designed. */
+@utility min-h-hero {
+  min-height: var(--hero-height);
 }

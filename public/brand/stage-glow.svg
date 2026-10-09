@@ -1,0 +1,14 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="390" height="320" viewBox="0 0 390 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Stage Glow Underlay" clip-path="url(#clip0_0_8)">
+<ellipse id="Stage Glow Purple Red" cx="195" cy="50" rx="200" ry="150" fill="url(#paint0_radial_0_8)"/>
+</g>
+<defs>
+<radialGradient id="paint0_radial_0_8" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(195 50) scale(200 150)">
+<stop stop-color="#FF003C" stop-opacity="0.14902"/>
+<stop offset="1" stop-color="#FF003C" stop-opacity="0"/>
+</radialGradient>
+<clipPath id="clip0_0_8">
+<rect width="390" height="320" fill="white"/>
+</clipPath>
+</defs>
+</svg>

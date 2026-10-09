@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { Footer } from "@/components/footer/footer";
+import { Navbar } from "@/components/navigation/navbar";
 import "./globals.css";
 
 // Display: Space Grotesk 700 only (headings, section/card titles, heroes).
@@ -18,14 +20,22 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+// Site-wide SEO defaults. Pages inherit the title template and set their own
+// title + description (+ alternates.canonical once the page ships).
 export const metadata: Metadata = {
-  title: "Fully Loaded",
+  // TODO: set SITE_URL to the production origin; needed for canonical/OG URLs.
+  metadataBase: new URL(process.env.SITE_URL ?? "http://localhost:3000"),
+  title: { default: "Fully Loaded", template: "%s | Fully Loaded" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
-      <body>{children}</body>
+      <body>
+        <Navbar />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

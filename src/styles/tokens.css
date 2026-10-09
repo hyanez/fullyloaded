@@ -43,6 +43,17 @@
   --hero-events-tracking: -.04em;
   --hero-faq: 96px; --hero-faq-line: .9;
   --hero-faq-tracking: -3px;
+  /* 404 hero: from Figma node 757:1102 (desktop) / 761:1057 (mobile). Not yet in the guide. */
+  --hero-height: 75svh; /* TODO: temporary landing hero; the navbar follows once the user scrolls past it */
+  --type-menu: 48px; --line-menu: 1.15;
+  --hero-404: 64px; --hero-404-line: 1.1;
+  --hero-404-tracking: -1.5px;
+  /* Apply page (Figma 425:885 desktop / 425:1229 mobile). Not yet in the guide. */
+  --hero-apply: 64px; --hero-apply-line: 1.1;
+  --hero-apply-tracking: -1.5px;
+  --type-contact: 28px; --line-contact: 1.2;
+  /* Form field label (Figma: Inter 700 11px +1px uppercase) */
+  --type-label: 11px; --line-label: 14px;
 
   /* Proposed accessibility / state values */
   --border-control: 1px solid var(--color-muted);
@@ -56,5 +67,8 @@
   :root {
     --gutter: 20px;
     --type-section: 32px; --line-section: 36px;
+    --hero-404: 42px;
+    --hero-apply: 44px; --hero-apply-tracking: -1px;
+    --type-contact: 20px;
   }
 }
