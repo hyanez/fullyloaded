@@ -50,6 +50,9 @@
   --text-body--line-height: var(--line-body);
   --text-small: var(--type-small);
   --text-small--line-height: var(--line-small);
+  /* Legal prose: 15/24 (guide "Legal prose: 15px / 24px") */
+  --text-prose: var(--type-small);
+  --text-prose--line-height: var(--line-prose);
   --text-utility: var(--type-utility);
   --text-utility--line-height: var(--line-utility);
   --text-utility--letter-spacing: 1px;

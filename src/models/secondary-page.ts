@@ -1,4 +1,4 @@
-import type { EntryFieldTypes } from "contentful";
+import type { EntryFields } from "contentful";
 
 /**
  * Contentful content type: Secondary Pages (id `secondaryPages`, display field `header`).
@@ -7,19 +7,20 @@ import type { EntryFieldTypes } from "contentful";
  *
  * NOTE: the model has no slug, so the only way to tell the entries apart is `header`
  * (e.g. "Privacy Policy"). Add a slug field in Contentful before fetching by route.
- * Every field is optional in Contentful.
+ * Every field is required in Contentful, so a published entry always has all of them.
+ * (Drafts fetched through the Preview API can still be incomplete.)
  */
 export const SECONDARY_PAGE_CONTENT_TYPE = "secondaryPages";
 
 // A `type` (not an `interface`) so it satisfies getEntriesByType's Record<string, unknown> constraint.
 export type SecondaryPageFields = {
-  header?: string;
-  subheader?: string;
+  header: string;
+  subheader: string;
   /** Free text (a "Symbol", not a date type), shown as written. */
-  lastUpdatedDate?: string;
+  lastUpdatedDate: string;
   /** Short summary. Candidate for the page's meta description. */
-  pageDescription?: string;
-  pageBody?: EntryFieldTypes.RichText;
+  pageDescription: string;
+  pageBody: EntryFields.RichText;
 };
 
 /** `id` is Contentful's own entry id (sys.id). */
