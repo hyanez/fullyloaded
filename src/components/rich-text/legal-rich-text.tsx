@@ -88,11 +88,19 @@ const asDocument = (content: TopLevelBlock[]): Document => ({
   content,
 });
 
-function SectionContent({ section, bodyClassName }: { section: Section; bodyClassName: string }) {
+function SectionContent({
+  section,
+  bodyClassName,
+  titleClassName = "text-legal",
+}: {
+  section: Section;
+  bodyClassName: string;
+  titleClassName?: string;
+}) {
   return (
     <>
       {section.title && (
-        <h2 className="font-display text-legal text-text">
+        <h2 className={`font-display text-text ${titleClassName}`}>
           {documentToReactComponents(asDocument([section.title]), titleOptions)}
         </h2>
       )}
@@ -105,20 +113,96 @@ function SectionContent({ section, bodyClassName }: { section: Section; bodyClas
   );
 }
 
+const NUMBER_PREFIX = /^(\d{1,2}\.)\s+(.+)$/;
+
+/** Section title with its leading number ("1.") split out so it can take the accent color. */
+function NumberedTitle({ title }: { title: TopLevelBlock }) {
+  const text = plainText(title).trim();
+  const match = NUMBER_PREFIX.exec(text);
+  return (
+    <h2 className="flex gap-3 font-display text-accordion text-text">
+      {match ? (
+        <>
+          <span className="text-accent">{match[1]}</span>
+          <span>{match[2]}</span>
+        </>
+      ) : (
+        text
+      )}
+    </h2>
+  );
+}
+
+/**
+ * Split off the closing note that follows the last numbered section: everything after the last
+ * horizontal rule.
+ */
+function toSectionsWithNote(document: Document): { sections: Section[]; note: TopLevelBlock[] } {
+  const hrIndex = document.content.map((node) => node.nodeType).lastIndexOf(BLOCKS.HR);
+  if (hrIndex !== -1) {
+    return {
+      sections: toSections(asDocument(document.content.slice(0, hrIndex))),
+      note: toSections(asDocument(document.content.slice(hrIndex + 1))).flatMap((s) => s.body),
+    };
+  }
+  // TODO: remove once editors put a horizontal rule before the closing note in Contentful. Today
+  // the note is the last paragraph of the final section, so treat anything after that section's
+  // first block as the note.
+  const sections = toSections(document);
+  const last = sections[sections.length - 1];
+  if (!last?.title || last.body.length < 2) return { sections, note: [] };
+  return {
+    sections: [...sections.slice(0, -1), { title: last.title, body: last.body.slice(0, 1) }],
+    note: last.body.slice(1),
+  };
+}
+
 /**
  * Contentful Rich Text in the legal reading layout: one block per section, 20/26 display title,
  * 15/24 muted prose.
- * - `divided` (Privacy Policy, Figma 425:610): red hairlines between sections.
+ * - `divided` (Privacy Policy, Figma 425:610 / 425:964 mobile): red hairlines between sections.
  * - `ruled` (Terms of Service, Figma 425:799): untitled intro in ivory 16px above an ivory
  *   hairline, then each section behind a 2px red left rule.
+ * - `numbered` (Waiver, Figma 425:703): untitled intro in a surface callout, 18px titles with a
+ *   red number, red hairline under each section, then a centered closing note.
  */
 export function LegalRichText({
   document,
   variant = "divided",
 }: {
   document: Document;
-  variant?: "divided" | "ruled";
+  variant?: "divided" | "ruled" | "numbered";
 }) {
+  if (variant === "numbered") {
+    const { sections, note } = toSectionsWithNote(document);
+    return (
+      <div className="flex flex-col gap-8 break-words">
+        {sections.map((section, index) =>
+          section.title ? (
+            <div key={index} className="flex flex-col gap-4 border-b border-line-accent pb-8">
+              <NumberedTitle title={section.title} />
+              <div className="flex flex-col gap-4 text-prose text-muted">
+                {documentToReactComponents(asDocument(section.body), blockOptions)}
+              </div>
+            </div>
+          ) : (
+            <div
+              key={index}
+              className="flex flex-col gap-4 rounded-small border border-line bg-surface p-6 text-prose font-medium text-text"
+            >
+              {documentToReactComponents(asDocument(section.body), blockOptions)}
+            </div>
+          ),
+        )}
+        {note.length > 0 && (
+          <div className="flex flex-col gap-4 pt-6 text-center text-small text-muted">
+            {documentToReactComponents(asDocument(note), blockOptions)}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   const sections = toSections(document);
 
   if (variant === "ruled") {
@@ -139,11 +223,20 @@ export function LegalRichText({
     );
   }
 
+  // Mobile (Figma 425:964): 18px titles, 32px either side of each hairline, and the first and
+  // last sections sit closer to the header and page end.
   return (
     <div className="flex flex-col divide-y divide-line-accent">
       {sections.map((section, index) => (
-        <div key={index} className="flex flex-col gap-3 py-10">
-          <SectionContent section={section} bodyClassName="text-prose text-muted" />
+        <div
+          key={index}
+          className="flex flex-col gap-3 py-8 first:pt-5 last:pb-0 md:py-10 md:first:pt-10 md:last:pb-10"
+        >
+          <SectionContent
+            section={section}
+            bodyClassName="text-prose text-muted"
+            titleClassName="text-accordion md:text-legal"
+          />
         </div>
       ))}
     </div>

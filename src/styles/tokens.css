@@ -57,6 +57,9 @@
   --hero-legal-tracking: -2px;
   /* Terms of Service hero (Figma 425:799): legal size, looser tracking. Not yet in the guide. */
   --hero-terms-tracking: -1px;
+  /* Waiver hero (Figma 425:703). Not yet in the guide. */
+  --hero-waiver: 44px; --hero-waiver-line: 1.1;
+  --hero-waiver-tracking: -1.5px;
   /* Form field label (Figma: Inter 700 11px +1px uppercase) */
   --type-label: 11px; --line-label: 14px;
 
@@ -74,7 +77,9 @@
     --type-section: 32px; --line-section: 36px;
     --hero-404: 42px;
     --hero-apply: 44px; --hero-apply-tracking: -1px;
-    --hero-legal: 40px; --hero-legal-tracking: -1px; /* no mobile frame yet */
+    /* Privacy Policy mobile (Figma 425:964): 40/1.05, no tracking. Terms shares size + line. */
+    --hero-legal: 40px; --hero-legal-line: 1.05; --hero-legal-tracking: 0;
+    --hero-waiver: 36px; --hero-waiver-tracking: -1px; /* no mobile frame yet */
     --type-contact: 20px;
   }
 }

@@ -78,6 +78,9 @@
   --text-hero-terms: var(--hero-legal);
   --text-hero-terms--line-height: var(--hero-legal-line);
   --text-hero-terms--letter-spacing: var(--hero-terms-tracking);
+  --text-hero-waiver: var(--hero-waiver);
+  --text-hero-waiver--line-height: var(--hero-waiver-line);
+  --text-hero-waiver--letter-spacing: var(--hero-waiver-tracking);
   --text-contact: var(--type-contact);
   --text-contact--line-height: var(--line-contact);
   --text-label: var(--type-label);

@@ -14,7 +14,7 @@ import { getEntriesByType } from "./contentful";
 export const SECONDARY_PAGE_HEADERS = {
   privacyPolicy: "Privacy Policy",
   termsOfService: "TERMS OF SERVICE",
-  waiver: "Waiver",
+  waiver: "Waiver & Release of Liability",
 } as const;
 
 /**
