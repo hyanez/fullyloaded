@@ -43,6 +43,8 @@
   --hero-events-tracking: -.04em;
   --hero-faq: 96px; --hero-faq-line: .9;
   --hero-faq-tracking: -3px;
+  /* Hero lead (guide: "Hero lead: Inter 22px / ~32px") */
+  --type-lead: 22px; --line-lead: 32px;
   /* 404 hero: from Figma node 757:1102 (desktop) / 761:1057 (mobile). Not yet in the guide. */
   --hero-height: 75svh; /* TODO: temporary landing hero; the navbar follows once the user scrolls past it */
   --type-menu: 48px; --line-menu: 1.15;
@@ -70,5 +72,8 @@
     --hero-404: 42px;
     --hero-apply: 44px; --hero-apply-tracking: -1px;
     --type-contact: 20px;
+    /* Guide: mobile heroes clamp(48px, 10vw, 72px), line-height 1, allow wrapping */
+    --hero-events: clamp(48px, 10vw, 72px); --hero-events-line: 1;
+    --hero-faq: clamp(48px, 10vw, 72px); --hero-faq-line: 1;
   }
 }

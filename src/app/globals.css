@@ -74,6 +74,8 @@
   --text-label: var(--type-label);
   --text-label--line-height: var(--line-label);
   --text-label--letter-spacing: 1px;
+  --text-lead: var(--type-lead);
+  --text-lead--line-height: var(--line-lead);
   --text-hero-faq: var(--hero-faq);
   --text-hero-faq--line-height: var(--hero-faq-line);
   --text-hero-faq--letter-spacing: var(--hero-faq-tracking);
@@ -86,6 +88,13 @@
 
   /* ---- Elevation (form panel, Figma 425:918) ---- */
   --shadow-panel: 0 16px 16px rgb(0 0 0 / 50%);
+  /* Calendar event card (Figma 204:117); not yet in the guide */
+  --shadow-card: 0 12px 24px -8px rgb(0 0 0 / 25%);
+  /* Application CTA panel (Figma 230:89); not yet in the guide */
+  --shadow-cta: 0 24px 56px -12px rgb(0 0 0 / 50%);
+
+  /* Events hero title offset shadow (Figma 252:124); not yet in the guide */
+  --text-shadow-hero: 4px 6px 0 var(--color-bg);
 
   /* ---- Motion ---- */
   --animate-nav-in: nav-in 200ms ease-out;
@@ -158,4 +167,23 @@
 /* TODO: temporary landing hero height (3/4 of the viewport) until the real hero is designed. */
 @utility min-h-hero {
   min-height: var(--hero-height);
+}
+
+/*
+ * Accordion panel: animates its height between 0 and auto via grid rows (0fr ↔ 1fr) plus a
+ * fade. Set data-state="open" | "closed" and put the content in ONE child with
+ * `overflow-hidden min-h-0`. Pair with `inert` when closed so hidden content can't be focused.
+ * Reduced motion: the base layer turns transitions off.
+ */
+@utility collapsible {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition:
+    grid-template-rows 300ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 200ms ease-out;
+  &[data-state="closed"] {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
 }

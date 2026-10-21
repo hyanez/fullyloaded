@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 // Copy lives in the app (not Contentful) so the 404 still works if Contentful is down.
 // Pill buttons: min-h 56, Inter 700 uppercase. Hover = surface fill + 40% red border + underline.
 const buttonBase =
-  "flex min-h-14 w-full items-center justify-center rounded-pill border px-8 font-body text-body font-bold uppercase tracking-button hover:bg-surface hover:border-accent-emphasis hover:underline md:w-auto";
+  "flex min-h-14 w-full items-center justify-center rounded-pill border px-8 font-body text-utility font-bold uppercase hover:bg-surface hover:border-accent-emphasis hover:underline md:w-auto";
 
 export default function NotFound() {
   return (

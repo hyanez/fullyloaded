@@ -60,7 +60,8 @@ If code and the guide disagree, the guide wins; change Figma first, then code.
   `text-body` 16/24 · `text-small` 15/22 · `text-utility` 13/18 +1px ·
   `text-kicker` 12/16 +1.8px.
 - Kicker: `text-kicker font-bold uppercase text-accent`. Nav: `text-utility font-medium`.
-  Buttons: Inter 16px 700 uppercase `tracking-button`. Legal prose: 15px / 24px.
+  Buttons: `text-utility font-bold uppercase` (13px, +1px) — deviation from the guide's
+  16px recipe, chosen 2026-10-20; update Figma. Keep min-h-14 targets. Legal prose: 15px / 24px.
 - Heroes are page-specific: `text-hero-events` (Events/Rules 112/.88/−.04em),
   `text-hero-faq` (96/.9/−3px). Mobile heroes: `clamp(48px, 10vw, 72px)`, line-height 1,
   allow wrapping. Never apply hero compression to body text.

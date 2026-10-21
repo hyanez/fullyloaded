@@ -15,6 +15,7 @@ import {
 import { CheckboxField } from "@/components/forms/checkbox-field";
 import { controlClass, describedBy, Field } from "@/components/forms/field";
 import { FileUpload } from "@/components/forms/file-upload";
+import { CONTACT_EMAIL } from "@/lib/site-links";
 
 export type EventOption = { value: string; label: string };
 export type EventsStatus = "ok" | "empty" | "error";
@@ -25,8 +26,6 @@ type Errors = Partial<Record<FieldKey, string>>;
 const fieldId = (key: FieldKey) => `apply-${key}`;
 const FIELD_ORDER: FieldKey[] = ["name", "email", "dob", "event", "face", "shirtless", "consent"];
 
-// TODO: contact address is hardcoded from Figma; move to Contentful with the rest of the page copy.
-export const CONTACT_EMAIL = "nycfullyloaded@gmail.com";
 
 function LegalLink({ href, children }: { href: string; children: React.ReactNode }) {
   // New tab so a half-filled form isn't lost while someone reads the policy.
@@ -251,7 +250,7 @@ export function ApplyForm({
 
       <button
         type="submit"
-        className="flex min-h-14 w-full items-center justify-center rounded-pill border border-action-aa bg-action-aa px-6 font-body text-body font-bold uppercase tracking-button text-text hover:border-accent-emphasis hover:bg-surface hover:underline"
+        className="flex min-h-14 w-full items-center justify-center rounded-pill border border-action-aa bg-action-aa px-6 font-body text-utility font-bold uppercase text-text hover:border-accent-emphasis hover:bg-surface hover:underline"
       >
         Submit Application
       </button>

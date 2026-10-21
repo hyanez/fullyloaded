@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import {
   ApplyForm,
-  CONTACT_EMAIL,
   type EventOption,
   type EventsStatus,
 } from "@/components/apply/apply-form";
 import { formatEventDate, getUpcomingEvents } from "@/lib/events";
+import { CONTACT_EMAIL } from "@/lib/site-links";
 
 // TODO: confirm the description with the owner.
 export const metadata: Metadata = {

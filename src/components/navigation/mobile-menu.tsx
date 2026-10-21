@@ -146,7 +146,7 @@ export function MobileMenu() {
             <div aria-hidden="true" className="h-px bg-line" />
             <NavLink
               href={signUpLink.href}
-              className="flex min-h-14 w-full items-center justify-center rounded-pill border border-action-aa bg-action-aa font-body text-body font-bold uppercase tracking-button text-text hover:border-accent-emphasis hover:bg-surface hover:underline"
+              className="flex min-h-14 w-full items-center justify-center rounded-pill border border-action-aa bg-action-aa font-body text-utility font-bold uppercase text-text hover:border-accent-emphasis hover:bg-surface hover:underline"
             >
               {signUpLink.label}
             </NavLink>
