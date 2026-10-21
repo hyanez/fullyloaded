@@ -7,10 +7,13 @@ import {
 } from "@/models";
 import { getEntriesByType } from "./contentful";
 
-/** Entry headers in Contentful. The model has no slug, so `header` is the lookup key. */
+/**
+ * Entry headers in Contentful. The model has no slug, so `header` is the lookup key.
+ * The match is exact and case-sensitive: these must mirror the entries as written in Contentful.
+ */
 export const SECONDARY_PAGE_HEADERS = {
   privacyPolicy: "Privacy Policy",
-  termsOfService: "Terms of Service",
+  termsOfService: "TERMS OF SERVICE",
   waiver: "Waiver",
 } as const;
 
@@ -24,6 +27,8 @@ export const getSecondaryPage = cache(
     const [page] = await getEntriesByType<SecondaryPageFields>(SECONDARY_PAGE_CONTENT_TYPE, {
       query: { "fields.header": header, limit: 1 },
     });
-    return page ?? null;
+    if (!page) return null;
+    // Pages render their own "Last updated:" label; drop it if an editor typed it into the field.
+    return { ...page, lastUpdatedDate: page.lastUpdatedDate.replace(/^\s*last updated:?\s*/i, "") };
   },
 );

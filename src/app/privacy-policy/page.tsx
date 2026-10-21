@@ -23,12 +23,20 @@ export default async function PrivacyPolicyPage() {
   if (!page) notFound();
 
   return (
-    <main className="container py-14 md:py-20 lg:py-30">
-      <article className="mx-auto flex max-w-legal flex-col gap-10">
-        <header className="flex flex-col gap-4 border-b border-line pb-10">
-          <p className="text-kicker font-bold uppercase text-accent">{page.subheader}</p>
-          <h1 className="font-display text-section text-text">{page.header}</h1>
-          <p className="text-utility text-muted">Last updated {page.lastUpdatedDate}</p>
+    // Figma 425:610 (desktop).
+    <main className="container py-14 md:py-16">
+      <article className="mx-auto flex max-w-legal flex-col gap-4">
+        <header className="flex flex-col gap-4">
+          <p className="flex items-center gap-3 text-kicker font-bold uppercase text-accent">
+            <span aria-hidden="true" className="h-0.75 w-11 bg-accent" />
+            {page.subheader}
+          </p>
+          <div className="flex flex-col gap-3">
+            <h1 className="break-words font-display text-hero-legal uppercase text-text">
+              {page.header}
+            </h1>
+            <p className="text-prose text-muted">Last updated: {page.lastUpdatedDate}</p>
+          </div>
         </header>
         <LegalRichText document={page.pageBody} />
       </article>

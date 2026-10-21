@@ -72,6 +72,12 @@
   --text-hero-apply: var(--hero-apply);
   --text-hero-apply--line-height: var(--hero-apply-line);
   --text-hero-apply--letter-spacing: var(--hero-apply-tracking);
+  --text-hero-legal: var(--hero-legal);
+  --text-hero-legal--line-height: var(--hero-legal-line);
+  --text-hero-legal--letter-spacing: var(--hero-legal-tracking);
+  --text-hero-terms: var(--hero-legal);
+  --text-hero-terms--line-height: var(--hero-legal-line);
+  --text-hero-terms--letter-spacing: var(--hero-terms-tracking);
   --text-contact: var(--type-contact);
   --text-contact--line-height: var(--line-contact);
   --text-label: var(--type-label);
