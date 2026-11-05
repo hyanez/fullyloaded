@@ -1,4 +1,5 @@
 import "server-only";
+import type { Document } from "@contentful/rich-text-types";
 import { FAQ_CONTENT_TYPE, type FaqFields } from "@/models";
 import { getEntriesByType } from "./contentful";
 import { richTextParagraphs } from "./text";
@@ -10,8 +11,8 @@ import { richTextParagraphs } from "./text";
  */
 export const FAQ_GROUPS = ["General", "Application & Entry", "Night Of", "Cumdump"] as const;
 
-/** A question formatted for the client accordion: plain, serializable values only. */
-export type FaqItem = { id: string; question: string; answer: string[] };
+/** A question with its Rich Text answer (lists, bold, links), rendered on the server. */
+export type FaqItem = { id: string; question: string; answer: Document };
 export type FaqGroup = { label: string; items: FaqItem[] };
 
 const normalize = (value: string) =>
@@ -27,9 +28,9 @@ export async function getFaqGroups(): Promise<FaqGroup[]> {
     FAQ_GROUPS.map((label) => [normalize(label), { label, items: [] }]),
   );
   for (const entry of entries) {
-    const answer = richTextParagraphs(entry.answer);
+    const answer = entry.answer as Document | undefined;
     // Skip incomplete entries (drafts via preview, or published before fields were required).
-    if (!entry.question || answer.length === 0) continue;
+    if (!entry.question || !answer || richTextParagraphs(answer).length === 0) continue;
     const type = entry.faqType?.trim() || "General";
     const key = normalize(type);
     if (!groups.has(key)) groups.set(key, { label: type, items: [] });

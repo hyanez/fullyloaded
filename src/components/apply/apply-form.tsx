@@ -2,30 +2,29 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   formatDobInput,
   validateConsent,
   validateDob,
   validateEmail,
   validateEvent,
-  validateImage,
   validateName,
+  validatePhotos,
 } from "@/lib/apply-validation";
 import { CheckboxField } from "@/components/forms/checkbox-field";
 import { controlClass, describedBy, Field } from "@/components/forms/field";
-import { FileUpload } from "@/components/forms/file-upload";
+import { PhotoUpload } from "@/components/forms/photo-upload";
 import { CONTACT_EMAIL } from "@/lib/site-links";
 
 export type EventOption = { value: string; label: string };
 export type EventsStatus = "ok" | "empty" | "error";
 
-type FieldKey = "name" | "email" | "dob" | "event" | "face" | "shirtless" | "consent";
+type FieldKey = "name" | "email" | "dob" | "event" | "photos" | "consent";
 type Errors = Partial<Record<FieldKey, string>>;
 
 const fieldId = (key: FieldKey) => `apply-${key}`;
-const FIELD_ORDER: FieldKey[] = ["name", "email", "dob", "event", "face", "shirtless", "consent"];
-
+const FIELD_ORDER: FieldKey[] = ["name", "email", "dob", "event", "photos", "consent"];
 
 function LegalLink({ href, children }: { href: string; children: React.ReactNode }) {
   // New tab so a half-filled form isn't lost while someone reads the policy.
@@ -46,15 +45,19 @@ export function ApplyForm({
 }) {
   const [errors, setErrors] = useState<Errors>({});
   const [dob, setDob] = useState("");
-  const [unavailable, setUnavailable] = useState(false);
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [photosBusy, setPhotosBusy] = useState(false);
+  const [submitState, setSubmitState] = useState<"idle" | "submitting" | "failed" | "done">("idle");
+  const successRef = useRef<HTMLHeadingElement>(null);
   const eventsReady = eventsStatus === "ok";
 
   function setError(key: FieldKey, message: string | undefined) {
     setErrors((current) => ({ ...current, [key]: message }));
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submitState === "submitting") return;
     const data = new FormData(event.currentTarget);
     const next: Errors = {
       name: validateName(String(data.get("name") ?? "")),
@@ -62,22 +65,44 @@ export function ApplyForm({
       dob: validateDob(dob),
       // With no events to choose from the select is disabled; that is reported separately below.
       event: eventsReady ? validateEvent(String(data.get("event") ?? "")) : undefined,
-      face: validateImage(data.get("facePicture") as File | null, "Face picture"),
-      shirtless: validateImage(data.get("shirtlessPicture") as File | null, "Shirtless picture"),
+      photos: photosBusy ? "Your photos are still being prepared. Try again in a moment." : validatePhotos(photos),
       consent: validateConsent(data.get("consent") === "on"),
     };
     setErrors(next);
-    setUnavailable(false);
 
     const firstInvalid = FIELD_ORDER.find((key) => next[key]);
     if (firstInvalid) {
+      setSubmitState("idle");
       document.getElementById(fieldId(firstInvalid))?.focus();
       return;
     }
 
-    // TODO: submission is not wired up (where applications and photos are stored is undecided).
-    // Until it is, nothing is sent; say so instead of showing a false success.
-    setUnavailable(true);
+    // The photo input has no name (it is only a picker); send the compressed files instead.
+    photos.forEach((file) => data.append("photos", file));
+    setSubmitState("submitting");
+    try {
+      const response = await fetch("/api/apply", { method: "POST", body: data });
+      if (!response.ok) throw new Error(`Apply failed with ${response.status}`);
+      setSubmitState("done");
+      requestAnimationFrame(() => successRef.current?.focus());
+    } catch (error) {
+      console.error("[apply]", error);
+      setSubmitState("failed");
+    }
+  }
+
+  if (submitState === "done") {
+    return (
+      <div className="flex w-full flex-col gap-4 rounded-panel border border-line bg-surface p-6 shadow-panel md:p-8 lg:w-145 lg:shrink-0">
+        {/* TODO: guide calls for a check icon with success text; none is exported yet. */}
+        <h2 ref={successRef} tabIndex={-1} className="font-display text-card text-text">
+          Application received
+        </h2>
+        <p className="text-body text-muted">
+          Thanks for applying. You&apos;ll get an email about the party once your application is processed.
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -186,22 +211,17 @@ export function ApplyForm({
         </div>
       </Field>
 
-      <FileUpload
-        id={fieldId("face")}
-        name="facePicture"
-        label="Face Picture"
-        error={errors.face}
-        onFileChange={(file) => setError("face", file ? validateImage(file, "Face picture") : undefined)}
-      />
-
-      <FileUpload
-        id={fieldId("shirtless")}
-        name="shirtlessPicture"
-        label="Shirtless Picture"
-        error={errors.shirtless}
-        onFileChange={(file) =>
-          setError("shirtless", file ? validateImage(file, "Shirtless picture") : undefined)
-        }
+      <PhotoUpload
+        id={fieldId("photos")}
+        label="Photos"
+        hint="Include a clear photo of your face and a shirtless photo."
+        error={errors.photos}
+        onChange={(files) => {
+          setPhotos(files);
+          if (files.length) setError("photos", undefined);
+        }}
+        onProblem={(message) => setError("photos", message)}
+        onBusyChange={setPhotosBusy}
       />
 
       <CheckboxField
@@ -233,13 +253,13 @@ export function ApplyForm({
         </ol>
       </CheckboxField>
 
-      {unavailable ? (
+      {submitState === "failed" ? (
         <p role="alert" className="flex gap-2 text-small text-error">
           <span aria-hidden="true" className="font-bold">
             !
           </span>
           <span>
-            We can&apos;t take applications right now. Please try again later or email{" "}
+            We couldn&apos;t send your application. Please try again, or email{" "}
             <a href={`mailto:${CONTACT_EMAIL}`} className="underline">
               {CONTACT_EMAIL}
             </a>
@@ -250,9 +270,10 @@ export function ApplyForm({
 
       <button
         type="submit"
-        className="flex min-h-14 w-full items-center justify-center rounded-pill border border-action-aa bg-action-aa px-6 font-body text-utility font-bold uppercase text-text hover:border-accent-emphasis hover:bg-surface hover:underline"
+        disabled={submitState === "submitting"}
+        className="flex min-h-14 w-full items-center justify-center rounded-pill border border-action-aa bg-action-aa px-6 font-body text-utility font-bold uppercase text-text hover:border-accent-emphasis hover:bg-surface hover:underline disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:border-action-aa disabled:hover:bg-action-aa disabled:hover:no-underline"
       >
-        Submit Application
+        {submitState === "submitting" ? "Submitting…" : "Submit Application"}
       </button>
     </form>
   );

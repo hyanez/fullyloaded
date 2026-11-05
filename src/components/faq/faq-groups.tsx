@@ -1,4 +1,5 @@
 import type { FaqGroup } from "@/lib/faqs";
+import { FaqRichText } from "@/components/rich-text/faq-rich-text";
 import { FaqItem } from "./faq-item";
 
 /**
@@ -26,7 +27,9 @@ export function FaqGroups({ groups, failed }: { groups: FaqGroup[]; failed: bool
               <ul className="flex max-w-faq flex-col gap-4">
                 {group.items.map((item, index) => (
                   <li key={item.id}>
-                    <FaqItem item={item} defaultOpen={groupIndex === 0 && index === 0} />
+                    <FaqItem question={item.question} defaultOpen={groupIndex === 0 && index === 0}>
+                      <FaqRichText document={item.answer} />
+                    </FaqItem>
                   </li>
                 ))}
               </ul>

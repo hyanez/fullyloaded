@@ -1,14 +1,22 @@
 "use client";
 
 import Image from "next/image";
-import { useId, useState } from "react";
-import type { FaqItem as FaqItemData } from "@/lib/faqs";
+import { useId, useState, type ReactNode } from "react";
 
 /**
  * FAQ accordion item (Figma "FAQ Accordion Item" 404:647 expanded / 404:656 closed).
  * The question is a disclosure button inside an h3; the answer animates open and closed.
+ * The answer arrives as server-rendered children (Contentful Rich Text).
  */
-export function FaqItem({ item, defaultOpen = false }: { item: FaqItemData; defaultOpen?: boolean }) {
+export function FaqItem({
+  question,
+  defaultOpen = false,
+  children,
+}: {
+  question: string;
+  defaultOpen?: boolean;
+  children: ReactNode;
+}) {
   const [open, setOpen] = useState(defaultOpen);
   const panelId = useId();
 
@@ -34,7 +42,7 @@ export function FaqItem({ item, defaultOpen = false }: { item: FaqItemData; defa
             />
           </span>
           <span className="min-w-0 flex-1 font-display text-accordion text-text group-hover:underline">
-            {item.question}
+            {question}
           </span>
         </button>
       </h3>
@@ -47,11 +55,7 @@ export function FaqItem({ item, defaultOpen = false }: { item: FaqItemData; defa
       >
         {/* The clipping box has no padding, so it can collapse all the way to 0. */}
         <div className="min-h-0 overflow-hidden">
-          <div className="flex flex-col gap-3 pt-4 text-small text-muted">
-            {item.answer.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
-          </div>
+          <div className="pt-4">{children}</div>
         </div>
       </div>
     </div>

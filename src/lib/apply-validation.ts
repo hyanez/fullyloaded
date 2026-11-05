@@ -3,7 +3,12 @@
 // Each returns an error reason, or undefined when the value is valid.
 
 export const MIN_AGE = 18; // TODO: confirm with owner (site 18+, events possibly 21+)
-export const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // TODO: confirm the upload size limit
+export const MIN_PHOTOS = 1; // TODO: confirm with owner (previously one face + one shirtless photo)
+export const MAX_PHOTOS = 5;
+/** Largest photo someone can pick; it is compressed in the browser before upload. */
+export const MAX_SOURCE_IMAGE_BYTES = 25 * 1024 * 1024;
+/** Largest photo the server accepts after compression. 5 × 1 MB stays under Netlify's 6 MB body limit. */
+export const MAX_UPLOAD_IMAGE_BYTES = 1024 * 1024;
 export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png"];
 
 export function validateName(value: string): string | undefined {
@@ -46,13 +51,25 @@ export function validateEvent(value: string): string | undefined {
   if (!value) return "Select the event you're applying to.";
 }
 
-export function validateImage(file: File | null | undefined, label: string): string | undefined {
-  if (!file || file.size === 0) return `Upload your ${label.toLowerCase()}.`;
+/** Checks one picked photo before it is compressed. */
+export function validateImage(file: File, maxBytes = MAX_SOURCE_IMAGE_BYTES): string | undefined {
   const isAccepted =
     ACCEPTED_IMAGE_TYPES.includes(file.type) && /\.(jpe?g|png)$/i.test(file.name);
-  if (!isAccepted) return "Upload a JPG or PNG image.";
-  if (file.size > MAX_IMAGE_BYTES) {
-    return `Image is too large. Max size is ${MAX_IMAGE_BYTES / 1024 / 1024} MB.`;
+  if (!isAccepted) return `${file.name} isn't a JPG or PNG image.`;
+  if (file.size > maxBytes) {
+    return `${file.name} is too large. Max size is ${maxBytes / 1024 / 1024} MB.`;
+  }
+}
+
+/** Checks the set of photos being submitted (run again on the server against the compressed files). */
+export function validatePhotos(files: File[], maxBytes = MAX_SOURCE_IMAGE_BYTES): string | undefined {
+  if (files.length < MIN_PHOTOS) {
+    return MIN_PHOTOS === 1 ? "Upload at least one photo." : `Upload at least ${MIN_PHOTOS} photos.`;
+  }
+  if (files.length > MAX_PHOTOS) return `Upload no more than ${MAX_PHOTOS} photos.`;
+  for (const file of files) {
+    const problem = validateImage(file, maxBytes);
+    if (problem) return problem;
   }
 }
 
