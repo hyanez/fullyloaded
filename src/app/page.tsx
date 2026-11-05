@@ -1,8 +1,10 @@
 import { ApplyCta } from "@/components/apply-cta";
 import { EventCalendar } from "@/components/events/event-calendar";
+import { EventsTicker } from "@/components/events/events-ticker";
+import { HomeHero } from "@/components/home-hero";
 import { RulesSection } from "@/components/rules/rules-section";
 import { getPageByHeader, HOME_PAGE_HEADER } from "@/lib/pages";
-import { splitBulletList } from "@/lib/text";
+import { richTextParagraphs, splitBulletList } from "@/lib/text";
 import type { PageEntry } from "@/models";
 
 // TODO: landing page scaffold. Sections mirror Figma "Landing Page" (node 99:3) and are
@@ -44,13 +46,11 @@ export default async function Home() {
   return (
     <main>
       {/* Upcoming Events Ticker — Figma 302:352 */}
-      <section aria-label="Upcoming events ticker" className="h-14" />
+      <EventsTicker />
 
-      {/* Hero / Upcoming Events + UpNext Carousel + Scroll cue — Figma 207:116, 171:192, 231:118 */}
-      <section data-nav-hero aria-label="Hero" className="flex min-h-hero items-center justify-center">
-        {/* TODO: temporary h1 so the page has a heading; replace with the real hero. */}
-        <h1 className="font-display text-section text-text">Fully Loaded</h1>
-      </section>
+      {/* Hero / Upcoming Events — Figma 207:116 */}
+      {/* TODO: UpNext Carousel (171:192) and Scroll cue (231:118) go inside the hero as children. */}
+      <HomeHero lead={page ? richTextParagraphs(page.description) : []} />
 
       {/* Calendar Module — Figma 204:116 */}
       <EventCalendar

@@ -1,0 +1,4 @@
+[build.environment]
+  # Space ID is public (it's in every images.ctfassets.net URL) and the
+  # environment is "master" — neither is a secret. Access tokens stay scanned.
+  SECRETS_SCAN_OMIT_KEYS = "CONTENTFUL_SPACE_ID,CONTENTFUL_ENVIRONMENT"

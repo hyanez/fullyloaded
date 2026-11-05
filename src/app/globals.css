@@ -182,6 +182,24 @@
 }
 
 /*
+ * Events ticker track (Figma 302:352): slides left by half its width, so a track holding two
+ * identical halves loops seamlessly. Set the duration inline. Pauses on hover, on focus inside
+ * and with data-paused. Reduced motion: the base layer turns the animation off.
+ */
+@utility ticker {
+  animation: ticker linear infinite;
+  &:hover,
+  &:focus-within,
+  &[data-paused] {
+    animation-play-state: paused;
+  }
+}
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/*
  * Accordion panel: animates its height between 0 and auto via grid rows (0fr ↔ 1fr) plus a
  * fade. Set data-state="open" | "closed" and put the content in ONE child with
  * `overflow-hidden min-h-0`. Pair with `inert` when closed so hidden content can't be focused.
