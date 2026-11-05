@@ -14,7 +14,16 @@ export type RuleFields = {
   /** Resolved asset (the client fetches with `include: 2`). Use `icon.fields.file?.url`. */
   icon?: Asset;
   title?: string;
+  /**
+   * Plain text for general rules. For role-specific rules, simple HTML: a `<p>` subtitle and an
+   * `<ol>` of the role's rules (parse with `splitHtmlList`).
+   */
   description?: string;
+  /**
+   * Required in Contentful, but entries created before the field was added have no value;
+   * treat missing as `false` (a general rule).
+   */
+  roleSpecificRule?: boolean;
 };
 
 /** `id` is Contentful's own entry id (sys.id). */

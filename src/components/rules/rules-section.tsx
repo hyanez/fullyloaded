@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { SectionHeader, type SectionCopy } from "@/components/section-header";
-import { getRules } from "@/lib/rules";
+import { getGeneralRules } from "@/lib/rules";
 import type { RuleEntry } from "@/models";
+import { RuleAccordionCard } from "./rule-accordion-card";
 import { RuleCard } from "./rule-card";
 
 type RulesSectionProps = {
@@ -15,6 +16,8 @@ type RulesSectionProps = {
    * `plain` (Rules page, Figma 262:147): surface-colored section, cards straight on it.
    */
   variant?: "panel" | "plain";
+  /** Below 768px, show each rule as an accordion (closed) instead of a full card. */
+  collapseOnMobile?: boolean;
   /** Extra blocks after the grid, inside the same section (e.g. the Rules page CTA). */
   children?: ReactNode;
 };
@@ -28,12 +31,13 @@ export async function RulesSection({
   tags = [],
   headingId = "rules-heading",
   variant = "panel",
+  collapseOnMobile = false,
   children,
 }: RulesSectionProps) {
   let rules: RuleEntry[] = [];
   let failed = false;
   try {
-    rules = await getRules();
+    rules = await getGeneralRules();
   } catch (error) {
     console.error("[rules] Could not load rules from Contentful:", error);
     failed = true;
@@ -63,7 +67,19 @@ export async function RulesSection({
         <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {rules.map((rule) => (
             <li key={rule.id}>
-              <RuleCard rule={rule} />
+              {collapseOnMobile && rule.description ? (
+                <>
+                  {/* One layout per breakpoint; the hidden one is display:none, so out of the a11y tree. */}
+                  <div className="md:hidden">
+                    <RuleAccordionCard rule={rule} />
+                  </div>
+                  <div className="hidden h-full md:block">
+                    <RuleCard rule={rule} />
+                  </div>
+                </>
+              ) : (
+                <RuleCard rule={rule} />
+              )}
             </li>
           ))}
         </ul>

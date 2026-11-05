@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ApplyCta } from "@/components/apply-cta";
 import { PageHero } from "@/components/page-hero";
+import { RoleRules } from "@/components/rules/role-rules";
 import { RulesSection } from "@/components/rules/rules-section";
 import { SectionHeader } from "@/components/section-header";
 import { getPageByHeader, RULES_PAGE_HEADER } from "@/lib/pages";
@@ -42,6 +43,7 @@ export default async function RulesPage() {
       {/* Main content — Figma 262:147: rules grid, role expectations, apply block. */}
       <RulesSection
         variant="plain"
+        collapseOnMobile
         copy={
           page?.sectionOneHeader
             ? {
@@ -52,9 +54,9 @@ export default async function RulesPage() {
             : null
         }
       >
-        {/* Rules by roles — Figma 266:151. TODO: role cards once the role rules are in Contentful. */}
+        {/* Rules by roles — Figma 266:151: heading copy from the page, cards from role-specific rules. */}
         {page?.sectionTwoHeader && (
-          <section aria-labelledby="roles-heading">
+          <section aria-labelledby="roles-heading" className="flex flex-col gap-6">
             <SectionHeader
               headingId="roles-heading"
               copy={{
@@ -63,6 +65,7 @@ export default async function RulesPage() {
                 description: page.sectionTwoDescription,
               }}
             />
+            <RoleRules />
           </section>
         )}
 
