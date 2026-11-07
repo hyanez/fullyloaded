@@ -4,7 +4,7 @@ import { PageHero } from "@/components/page-hero";
 import { RoleRules } from "@/components/rules/role-rules";
 import { RulesSection } from "@/components/rules/rules-section";
 import { SectionHeader } from "@/components/section-header";
-import { getPageByHeader, RULES_PAGE_HEADER } from "@/lib/pages";
+import { getPageByHeader, RULES_PAGE_HEADER, heroImageUrl } from "@/lib/pages";
 import { signUpLink } from "@/lib/site-links";
 import { richTextParagraphs } from "@/lib/text";
 import type { PageEntry } from "@/models";
@@ -37,7 +37,7 @@ export default async function RulesPage() {
         title={page?.header ?? "Rules"}
         lead={page ? richTextParagraphs(page.description) : []}
         action={page ? { label: page.actionSectionSubhead, href: signUpLink.href } : undefined}
-        imageSrc="/photos/events-hero.png"
+        imageSrc={heroImageUrl(page)}
       />
 
       {/* Main content — Figma 262:147: rules grid, role expectations, apply block. */}

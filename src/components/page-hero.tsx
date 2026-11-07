@@ -6,8 +6,11 @@ type PageHeroProps = {
   /** Lead paragraphs under the title. */
   lead?: string[];
   action?: { label: string; href: string };
-  /** Background photo from `public/`. Decorative; UI text is never baked into it. */
-  imageSrc: string;
+  /**
+   * Background photo (the page entry's `heroImage` in Contentful). Decorative; UI text is never
+   * baked into it. Omitted when missing: the scrim and glow still render over the page color.
+   */
+  imageSrc?: string | null;
   /**
    * `events` (Events/Rules, Figma 252:172): full photo, left→right scrim, `text-hero-events`.
    * `faq` (Figma 404:464): photo at 35%, diagonal scrim, centered glow, `text-hero-faq`.
@@ -24,14 +27,16 @@ export function PageHero({ title, lead = [], action, imageSrc, variant = "events
   const faq = variant === "faq";
   return (
     <section className="relative overflow-hidden">
-      <Image
-        src={imageSrc}
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className={`object-cover ${faq ? "opacity-35" : ""}`}
-      />
+      {imageSrc && (
+        <Image
+          src={imageSrc}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className={`object-cover ${faq ? "opacity-35" : ""}`}
+        />
+      )}
       <div
         aria-hidden="true"
         className={
@@ -78,17 +83,24 @@ export function PageHero({ title, lead = [], action, imageSrc, variant = "events
             </p>
           ))}
         </div>
-        {action && (
-          // Guide primary pill + 20px arrow with a 12px gap.
-          <Link
-            href={action.href}
-            className="flex min-h-14 w-full items-center justify-center gap-3 rounded-pill border border-action-aa bg-action-aa px-8 text-utility font-bold uppercase text-text hover:border-accent-emphasis hover:bg-surface hover:underline md:w-auto md:self-start"
-          >
-            {action.label}
-            <Image src="/icons/arrow-right.svg" alt="" aria-hidden="true" width={20} height={20} />
-          </Link>
-        )}
+        {action && <HeroActionLink action={action} />}
       </div>
     </section>
+  );
+}
+
+/**
+ * Hero call to action, shared with the home hero: guide primary pill (ivory on `action-aa`)
+ * + 20px arrow with a 12px gap. Full width below 768px.
+ */
+export function HeroActionLink({ action }: { action: { label: string; href: string } }) {
+  return (
+    <Link
+      href={action.href}
+      className="flex min-h-14 w-full items-center justify-center gap-3 rounded-pill border border-action-aa bg-action-aa px-8 text-utility font-bold uppercase text-text hover:border-accent-emphasis hover:bg-surface hover:underline md:w-auto md:self-start"
+    >
+      {action.label}
+      <Image src="/icons/arrow-right.svg" alt="" aria-hidden="true" width={20} height={20} />
+    </Link>
   );
 }

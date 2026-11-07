@@ -9,7 +9,7 @@ export const primaryLinks: SiteLink[] = [
   { label: "FAQ", href: "/faq" },
 ];
 
-export const signUpLink: SiteLink = { label: "Sign Up", href: "/apply" };
+export const signUpLink: SiteLink = { label: "Apply", href: "/apply" };
 
 export const footerNavLinks: SiteLink[] = [
   { label: "Home", href: "/" },

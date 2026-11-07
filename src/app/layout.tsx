@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
-import { Footer } from "@/components/footer/footer";
-import { Navbar } from "@/components/navigation/navbar";
 import "./globals.css";
 
 // Display: Space Grotesk 700 only (headings, section/card titles, heroes).
@@ -31,11 +29,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
-      <body>
-        <Navbar />
-        {children}
-        <Footer />
-      </body>
+      {/* The navbar and footer live in the (site) layout, so the age gate renders without them. */}
+      <body>{children}</body>
     </html>
   );
 }

@@ -6,7 +6,7 @@ import type { RuleEntry } from "@/models";
 import { RuleIcon } from "./rule-card";
 
 /**
- * Mobile rule card (Rules page, below 768px): the icon + title row is a disclosure button
+ * Mobile rule card (Home and Rules pages, below 768px): the icon + title row is a disclosure button
  * that expands to the description. Closed by default. No Figma frame yet; it follows the
  * calendar's Event Accordion Card (413:596) so mobile accordions match across the site.
  */

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { EventCalendar } from "@/components/events/event-calendar";
 import { PageHero } from "@/components/page-hero";
-import { EVENTS_PAGE_HEADER, getPageByHeader } from "@/lib/pages";
+import { EVENTS_PAGE_HEADER, getPageByHeader, heroImageUrl } from "@/lib/pages";
 import { signUpLink } from "@/lib/site-links";
 import { richTextParagraphs } from "@/lib/text";
 import type { PageEntry } from "@/models";
@@ -34,7 +34,7 @@ export default async function EventsPage() {
         title={page?.header ?? "Events"}
         lead={page ? richTextParagraphs(page.description) : []}
         action={page ? { label: page.actionSectionSubhead, href: signUpLink.href } : undefined}
-        imageSrc="/photos/events-hero.png"
+        imageSrc={heroImageUrl(page)}
       />
 
       {/* Upcoming Dates — Figma 252:129 (desktop) / 416:601 (mobile) */}

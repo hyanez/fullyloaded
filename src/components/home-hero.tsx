@@ -1,9 +1,14 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { HeroActionLink } from "./page-hero";
 
 type HomeHeroProps = {
   /** Lead lines under the wordmark (Home Page `description` in Contentful). */
   lead?: string[];
+  /** Apply button under the lead copy, matching the Events/Rules heroes. */
+  action?: { label: string; href: string };
+  /** Background photo (Home Page `heroImage` in Contentful). Decorative; omitted when missing. */
+  imageSrc?: string | null;
   /** Rendered inside the hero below the intro (UpNext carousel, scroll cue). */
   children?: ReactNode;
 };
@@ -19,17 +24,12 @@ type HomeHeroProps = {
  * - The backdrop is cropped from the Figma fill and scaled uniformly (Figma stretches it).
  * - The wordmark renders at up to 702px wide, a size the guide doesn't list yet.
  */
-export function HomeHero({ lead = [], children }: HomeHeroProps) {
+export function HomeHero({ lead = [], action, imageSrc, children }: HomeHeroProps) {
   return (
     <section data-nav-hero aria-label="Hero" className="relative min-h-hero overflow-hidden">
-      <Image
-        src="/photos/home-hero.png"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover object-top"
-      />
+      {imageSrc && (
+        <Image src={imageSrc} alt="" fill priority sizes="100vw" className="object-cover object-top" />
+      )}
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-linear-to-b from-bg/99 via-bg/80 via-60% to-bg/54 md:bg-linear-to-r md:from-bg/96 md:via-bg/61 md:via-52% md:to-bg/18"
@@ -54,14 +54,19 @@ export function HomeHero({ lead = [], children }: HomeHeroProps) {
           />
         </h1>
 
-        {lead.length > 0 && (
+        {(lead.length > 0 || action) && (
           <div className="flex flex-col gap-6">
-            <span aria-hidden="true" className="h-0.75 w-11 bg-accent" />
-            <div className="max-w-modal text-body text-text md:text-lead">
-              {lead.map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-            </div>
+            {lead.length > 0 && (
+              <>
+                <span aria-hidden="true" className="h-0.75 w-11 bg-accent" />
+                <div className="max-w-modal text-body text-text md:text-lead">
+                  {lead.map((line) => (
+                    <p key={line}>{line}</p>
+                  ))}
+                </div>
+              </>
+            )}
+            {action && <HeroActionLink action={action} />}
           </div>
         )}
 

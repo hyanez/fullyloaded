@@ -3,7 +3,8 @@ import { EventCalendar } from "@/components/events/event-calendar";
 import { EventsTicker } from "@/components/events/events-ticker";
 import { HomeHero } from "@/components/home-hero";
 import { RulesSection } from "@/components/rules/rules-section";
-import { getPageByHeader, HOME_PAGE_HEADER } from "@/lib/pages";
+import { getPageByHeader, heroImageUrl, HOME_PAGE_HEADER } from "@/lib/pages";
+import { signUpLink } from "@/lib/site-links";
 import { richTextParagraphs, splitBulletList } from "@/lib/text";
 import type { PageEntry } from "@/models";
 
@@ -50,7 +51,11 @@ export default async function Home() {
 
       {/* Hero / Upcoming Events — Figma 207:116 */}
       {/* TODO: UpNext Carousel (171:192) and Scroll cue (231:118) go inside the hero as children. */}
-      <HomeHero lead={page ? richTextParagraphs(page.description) : []} />
+      <HomeHero
+        lead={page ? richTextParagraphs(page.description) : []}
+        action={actionSectionSubhead ? { label: actionSectionSubhead, href: signUpLink.href } : undefined}
+        imageSrc={heroImageUrl(page)}
+      />
 
       {/* Calendar Module — Figma 204:116 */}
       <EventCalendar
@@ -67,8 +72,9 @@ export default async function Home() {
 
       {/* The Rules Section — Figma 210:97 */}
       <RulesSection
+        collapseOnMobile
         copy={
-              sectionTwoHeader
+          sectionTwoHeader
             ? {
                 kicker: sectionTwoSubhead,
                 heading: sectionTwoHeader,

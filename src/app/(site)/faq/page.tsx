@@ -3,7 +3,7 @@ import { ContactCta } from "@/components/contact-cta";
 import { FaqGroups } from "@/components/faq/faq-groups";
 import { PageHero } from "@/components/page-hero";
 import { getFaqGroups, type FaqGroup } from "@/lib/faqs";
-import { FAQ_PAGE_HEADER, getPageByHeader } from "@/lib/pages";
+import { FAQ_PAGE_HEADER, getPageByHeader, heroImageUrl } from "@/lib/pages";
 import { richTextParagraphs } from "@/lib/text";
 import type { PageEntry } from "@/models";
 
@@ -47,7 +47,7 @@ export default async function FaqPage() {
         variant="faq"
         title={page?.header ?? "FAQ"}
         lead={page ? richTextParagraphs(page.description) : []}
-        imageSrc="/photos/faq-backdrop.png"
+        imageSrc={heroImageUrl(page)}
       />
 
       {/* FAQ sections — Figma 404:474 */}

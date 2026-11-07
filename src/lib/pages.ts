@@ -16,3 +16,13 @@ export async function getPageByHeader(header: string): Promise<PageEntry | null>
   });
   return page ?? null;
 }
+
+/**
+ * Absolute URL of the page's hero photo, or null if the entry has none (or it is unpublished).
+ * Contentful serves protocol-relative URLs ("//images.ctfassets.net/…"); next/image needs https.
+ */
+export function heroImageUrl(page: PageEntry | null): string | null {
+  const url = page?.heroImage?.fields?.file?.url;
+  if (typeof url !== "string") return null;
+  return url.startsWith("//") ? `https:${url}` : url;
+}

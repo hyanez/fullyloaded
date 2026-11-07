@@ -1,4 +1,4 @@
-import type { EntryFieldTypes } from "contentful";
+import type { Asset, EntryFieldTypes } from "contentful";
 
 /**
  * Contentful content type: Page (id `page`, display field `header`).
@@ -13,6 +13,8 @@ export const PAGE_CONTENT_TYPE = "page";
 // A `type` (not an `interface`) so it satisfies getEntriesByType's Record<string, unknown> constraint.
 export type PageFields = {
   header: string;
+  /** Hero background photo. Resolved asset (the client fetches with `include: 2`); use `heroImageUrl`. */
+  heroImage?: Asset;
   description: EntryFieldTypes.RichText;
   sectionOneHeader?: string;
   sectionOneSubhead?: string;

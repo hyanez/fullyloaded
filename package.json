@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:open": "(until curl -s -o /dev/null http://localhost:3000; do sleep 0.5; done; open -a 'Google Chrome' http://localhost:3000) & next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
