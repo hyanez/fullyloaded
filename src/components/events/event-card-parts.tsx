@@ -45,7 +45,7 @@ export function EventPoster({
   if (!poster) return null;
   return (
     <div className={`relative aspect-2/3 shrink-0 overflow-hidden bg-bg ${className}`}>
-      <Image src={poster.url} alt={poster.alt} fill sizes={sizes} className="object-cover" />
+      <Image src={poster.url} alt={poster.alt} fill sizes={sizes} quality={90} className="object-cover" />
     </div>
   );
 }
