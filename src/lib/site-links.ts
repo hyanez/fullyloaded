@@ -25,4 +25,4 @@ export const footerLegalLinks: SiteLink[] = [
 
 // Plain module (no "use client"), so Server and Client Components both get the real string.
 // TODO: contact address is hardcoded from Figma; move to Contentful with the rest of the page copy.
-export const CONTACT_EMAIL = "nycfullyloaded@gmail.com";
+export const CONTACT_EMAIL = "events@fullyloadednyc.com";

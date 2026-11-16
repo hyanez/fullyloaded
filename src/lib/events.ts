@@ -8,7 +8,7 @@ import { richTextParagraphs } from "./text";
 export const EVENT_TIMEZONE = "America/New_York";
 
 /** "2026-10-11" style day key for an ISO date-time, in the event timezone. */
-function dayKey(iso: string): string {
+export function dayKey(iso: string): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: EVENT_TIMEZONE }).format(new Date(iso));
 }
 

@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import {
+  type ApplyField,
+  type ApplyResponse,
   formatDobInput,
   validateConsent,
   validateDob,
@@ -20,7 +22,7 @@ import { CONTACT_EMAIL } from "@/lib/site-links";
 export type EventOption = { value: string; label: string };
 export type EventsStatus = "ok" | "empty" | "error";
 
-type FieldKey = "name" | "email" | "dob" | "event" | "photos" | "consent";
+type FieldKey = ApplyField;
 type Errors = Partial<Record<FieldKey, string>>;
 
 const fieldId = (key: FieldKey) => `apply-${key}`;
@@ -48,6 +50,11 @@ export function ApplyForm({
   const [photos, setPhotos] = useState<File[]>([]);
   const [photosBusy, setPhotosBusy] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "submitting" | "failed" | "done">("idle");
+  const [submitError, setSubmitError] = useState<string>();
+  const [submissionId, setSubmissionId] = useState<string>();
+  // When the waiver box was ticked; sent with the application as the signature time.
+  const waiverAcceptedAt = useRef<string | null>(null);
+  const [consented, setConsented] = useState(false);
   const successRef = useRef<HTMLHeadingElement>(null);
   const eventsReady = eventsStatus === "ok";
 
@@ -79,16 +86,32 @@ export function ApplyForm({
 
     // The photo input has no name (it is only a picker); send the compressed files instead.
     photos.forEach((file) => data.append("photos", file));
+    data.set("waiverAcceptedAt", waiverAcceptedAt.current ?? new Date().toISOString());
     setSubmitState("submitting");
+    setSubmitError(undefined);
+    let result: ApplyResponse | null = null;
     try {
       const response = await fetch("/api/apply", { method: "POST", body: data });
-      if (!response.ok) throw new Error(`Apply failed with ${response.status}`);
-      setSubmitState("done");
-      requestAnimationFrame(() => successRef.current?.focus());
+      result = (await response.json().catch(() => null)) as ApplyResponse | null;
     } catch (error) {
       console.error("[apply]", error);
-      setSubmitState("failed");
     }
+
+    if (result?.ok) {
+      setSubmissionId(result.submissionId);
+      setSubmitState("done");
+      requestAnimationFrame(() => successRef.current?.focus());
+      return;
+    }
+    // Everything entered (photos included) stays in place so the applicant can fix and resend.
+    if (result?.field) {
+      setErrors({ [result.field]: result.message });
+      setSubmitState("idle");
+      document.getElementById(fieldId(result.field))?.focus();
+      return;
+    }
+    setSubmitError(result?.message);
+    setSubmitState("failed");
   }
 
   if (submitState === "done") {
@@ -101,6 +124,11 @@ export function ApplyForm({
         <p className="text-body text-muted">
           Thanks for applying. You&apos;ll get an email about the party once your application is processed.
         </p>
+        {submissionId ? (
+          <p className="text-small text-muted">
+            Reference: <span className="font-semibold text-text">{submissionId}</span>
+          </p>
+        ) : null}
       </div>
     );
   }
@@ -228,16 +256,20 @@ export function ApplyForm({
         id={fieldId("consent")}
         name="consent"
         error={errors.consent}
-        onChange={() => setError("consent", undefined)}
+        onChange={(checked) => {
+          waiverAcceptedAt.current = checked ? new Date().toISOString() : null;
+          setConsented(checked);
+          setError("consent", undefined);
+        }}
         label={
           <>
-            By signing I have read the <LegalLink href="/waiver">waiver and release of liability</LegalLink> and
+            By checking this box I have read the <LegalLink href="/waiver">waiver and release of liability</LegalLink> and
             fully understand its terms and voluntarily agree to be bound by it.
           </>
         }
       >
         <p>
-          This signature also serves as agreement to our{" "}
+          Checking this box also serves as agreement to our{" "}
           <LegalLink href="/privacy-policy">data privacy policy</LegalLink> and{" "}
           <LegalLink href="/terms-of-service">terms of service</LegalLink>.
         </p>
@@ -253,13 +285,30 @@ export function ApplyForm({
         </ol>
       </CheckboxField>
 
+      {/* Honeypot: off-screen (not display:none, which some bots skip) and out of the tab order. */}
+      <div aria-hidden="true" className="sr-only">
+        {/* Meaningless name/id so browser autofill and password managers don't fill it for real people. */}
+        <label htmlFor="apply-fl-hp">Leave this blank</label>
+        <input
+          id="apply-fl-hp"
+          name="fl_hp"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          data-1p-ignore
+          data-lpignore="true"
+          defaultValue=""
+        />
+      </div>
+
       {submitState === "failed" ? (
         <p role="alert" className="flex gap-2 text-small text-error">
           <span aria-hidden="true" className="font-bold">
             !
           </span>
           <span>
-            We couldn&apos;t send your application. Please try again, or email{" "}
+            {submitError ?? "We couldn't send your application."} Your details are still here, so you can
+            submit again or email{" "}
             <a href={`mailto:${CONTACT_EMAIL}`} className="underline">
               {CONTACT_EMAIL}
             </a>
@@ -268,9 +317,16 @@ export function ApplyForm({
         </p>
       ) : null}
 
+      {!consented ? (
+        <p id="apply-submit-hint" className="text-small text-muted">
+          Check the box above to agree to the waiver and policies before submitting.
+        </p>
+      ) : null}
+
       <button
         type="submit"
-        disabled={submitState === "submitting"}
+        disabled={!consented || submitState === "submitting"}
+        aria-describedby={consented ? undefined : "apply-submit-hint"}
         className="flex min-h-14 w-full items-center justify-center rounded-pill border border-action-aa bg-action-aa px-6 font-body text-utility font-bold uppercase text-text hover:border-accent-emphasis hover:bg-surface hover:underline disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:border-action-aa disabled:hover:bg-action-aa disabled:hover:no-underline"
       >
         {submitState === "submitting" ? "Submitting…" : "Submit Application"}

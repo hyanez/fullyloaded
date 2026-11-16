@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { getPageByHeader, heroImageUrl, HOME_PAGE_HEADER } from "@/lib/pages";
 import { safeNextPath } from "@/lib/age-gate";
-import { confirmAge } from "./actions";
 
 export const metadata: Metadata = {
   title: "Age Verification",
@@ -20,7 +19,7 @@ const buttonBase =
 /**
  * Age gate (Figma "age-verification" 404:860): backdrop photo at 15%, centered stage glow and
  * the verification card. `src/proxy.ts` sends unverified visitors here with `?next=`; the
- * "I am 18+" form sets the age cookie and continues there. Works without JavaScript.
+ * "I am 18+" form posts to /api/age-verification, which sets the age cookie and continues there. Works without JavaScript.
  *
  * Deviations from the Figma frame (guide wins):
  * - The "I accept cookies and the privacy policy" checkbox is left out: consent is never
@@ -81,7 +80,8 @@ export default async function AgeVerificationPage({ searchParams }: PageProps<"/
             </p>
           </div>
 
-          <form action={confirmAge} className="flex w-full flex-col-reverse gap-4 md:flex-row">
+          {/* Plain form post (not a Server Action): see src/app/api/age-verification/route.ts. */}
+          <form method="post" action="/api/age-verification" className="flex w-full flex-col-reverse gap-4 md:flex-row">
             <input type="hidden" name="next" value={next} />
             <a href={LEAVE_URL} className={`${buttonBase} border-muted text-text`}>
               Leave

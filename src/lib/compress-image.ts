@@ -3,32 +3,55 @@
 
 import { MAX_UPLOAD_IMAGE_BYTES } from "./apply-validation";
 
-const MAX_EDGE = 1600; // px on the longest side — plenty for reviewing a guestlist photo
-const QUALITIES = [0.82, 0.72, 0.62, 0.5];
+// Longest side in px, largest first: 1600 is plenty for reviewing a guestlist photo; the smaller
+// sizes only kick in for very detailed photos that won't fit the byte budget otherwise.
+const EDGES = [1600, 1280, 1024];
+const QUALITIES = [0.82, 0.72, 0.62];
 
 function toBlob(canvas: HTMLCanvasElement, quality: number): Promise<Blob | null> {
   return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
 }
 
-/** Returns a JPEG no larger than MAX_EDGE px and MAX_UPLOAD_IMAGE_BYTES. Throws if it can't. */
+function isHeic(file: File): boolean {
+  return /^image\/hei[cf]$/.test(file.type) || /\.hei[cf]$/i.test(file.name);
+}
+
+async function decode(file: File): Promise<ImageBitmap> {
+  try {
+    // "from-image" applies EXIF rotation so phone photos aren't sideways once metadata is gone.
+    // Safari decodes HEIC natively here too.
+    return await createImageBitmap(file, { imageOrientation: "from-image" });
+  } catch (error) {
+    if (!isHeic(file)) throw error;
+    // Other browsers can't read HEIC; convert with libheif (WebAssembly, ~3 MB), loaded only when needed.
+    const { heicTo } = await import("heic-to/next");
+    return heicTo({ blob: file, type: "bitmap" });
+  }
+}
+
+/** Returns a JPEG no larger than MAX_UPLOAD_IMAGE_BYTES (and 1600px). Throws if it can't. */
 export async function compressImage(file: File): Promise<File> {
-  // "from-image" applies EXIF rotation so phone photos aren't sideways once metadata is gone.
-  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
-  const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+  const bitmap = await decode(file);
+  const baseName = file.name.replace(/\.[^.]+$/, "") || "photo";
   const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas is not available.");
-  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
 
-  const baseName = file.name.replace(/\.[^.]+$/, "") || "photo";
-  for (const quality of QUALITIES) {
-    const blob = await toBlob(canvas, quality);
-    if (blob && blob.size <= MAX_UPLOAD_IMAGE_BYTES) {
-      return new File([blob], `${baseName}.jpg`, { type: "image/jpeg" });
+  try {
+    for (const edge of EDGES) {
+      const scale = Math.min(1, edge / Math.max(bitmap.width, bitmap.height));
+      canvas.width = Math.round(bitmap.width * scale);
+      canvas.height = Math.round(bitmap.height * scale);
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      for (const quality of QUALITIES) {
+        const blob = await toBlob(canvas, quality);
+        if (blob && blob.size <= MAX_UPLOAD_IMAGE_BYTES) {
+          return new File([blob], `${baseName}.jpg`, { type: "image/jpeg" });
+        }
+      }
     }
+  } finally {
+    bitmap.close();
   }
   throw new Error("Image could not be compressed enough.");
 }

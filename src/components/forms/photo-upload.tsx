@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { MAX_PHOTOS, validateImage } from "@/lib/apply-validation";
+import { MAX_PHOTOS, validateSourceImage } from "@/lib/apply-validation";
 import { compressImage } from "@/lib/compress-image";
 import { describedBy, Field } from "./field";
 
@@ -33,6 +33,8 @@ export function PhotoUpload({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const photosRef = useRef<Photo[]>([]);
+  // Keys for the thumbnail list. (crypto.randomUUID only exists on HTTPS/localhost, so not that.)
+  const nextId = useRef(0);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [busy, setBusy] = useState(false);
   const full = photos.length >= MAX_PHOTOS;
@@ -58,7 +60,7 @@ export function PhotoUpload({
 
     const problems: string[] = [];
     let accepted = picked.filter((file) => {
-      const problem = validateImage(file);
+      const problem = validateSourceImage(file);
       if (problem) problems.push(problem);
       return !problem;
     });
@@ -72,20 +74,17 @@ export function PhotoUpload({
     }
 
     setBusyState(true);
-    const results = await Promise.allSettled(accepted.map(compressImage));
+    // One at a time: decoding several full-size phone photos at once can run iOS out of memory.
     const added: Photo[] = [];
-    results.forEach((result, index) => {
-      if (result.status === "fulfilled") {
-        added.push({
-          id: crypto.randomUUID(),
-          file: result.value,
-          url: URL.createObjectURL(result.value),
-          name: accepted[index].name,
-        });
-      } else {
-        problems.push(`${accepted[index].name} couldn't be read. Try a different photo.`);
+    for (const file of accepted) {
+      try {
+        const compressed = await compressImage(file);
+        added.push({ id: String(nextId.current++), file: compressed, url: URL.createObjectURL(compressed), name: file.name });
+      } catch (error) {
+        console.error("[photo-upload]", file.name, error);
+        problems.push(`${file.name} couldn't be read. Try a different photo.`);
       }
-    });
+    }
     commit([...photosRef.current, ...added]);
     setBusyState(false);
     onProblem(problems.length ? problems.join(" ") : undefined);
@@ -105,7 +104,7 @@ export function PhotoUpload({
       ? `${MAX_PHOTOS} of ${MAX_PHOTOS} photos added. Remove one to add another.`
       : photos.length
         ? `${photos.length} of ${MAX_PHOTOS} photos added. Click to add more.`
-        : `JPG or PNG, up to ${MAX_PHOTOS} photos`;
+        : `JPG, PNG or HEIC, up to ${MAX_PHOTOS} photos`;
 
   return (
     <Field id={id} label={label} hint={hint} error={error} gap="gap-3">
@@ -114,7 +113,7 @@ export function PhotoUpload({
           ref={inputRef}
           id={id}
           type="file"
-          accept="image/jpeg,image/png"
+          accept="image/jpeg,image/png,image/heic,image/heif,.heic,.heif"
           multiple
           disabled={busy || full}
           aria-required="true"
