@@ -28,7 +28,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
+    // Some browsers (e.g. Chrome on iOS) add their own attributes to <html> before React loads;
+    // this only silences mismatches on this element's attributes, not its children.
+    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`} suppressHydrationWarning>
       {/* The navbar and footer live in the (site) layout, so the age gate renders without them. */}
       <body>{children}</body>
     </html>

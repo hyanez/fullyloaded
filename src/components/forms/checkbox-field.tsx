@@ -15,7 +15,7 @@ export function CheckboxField({
   name: string;
   label: ReactNode;
   error?: string;
-  onChange?: () => void;
+  onChange?: (checked: boolean) => void;
   children?: ReactNode;
 }) {
   const descriptionId = `${id}-description`;
@@ -35,7 +35,7 @@ export function CheckboxField({
             aria-required="true"
             aria-invalid={error ? true : undefined}
             aria-describedby={describedByIds || undefined}
-            onChange={onChange}
+            onChange={(event) => onChange?.(event.target.checked)}
             className="peer size-5 scroll-mt-24 appearance-none rounded-checkbox border border-muted bg-input checked:border-action-aa checked:bg-action-aa hover:border-accent-emphasis aria-invalid:border-text"
           />
           {/* Check mark: 2px round-cap stroke. TODO: swap for the guide's consent check artwork once exported. */}

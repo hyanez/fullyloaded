@@ -120,4 +120,4 @@ If code and the guide disagree, the guide wins; change Figma first, then code.
 - [ ] Keyboard, focus and screen-reader labels verified
 - [ ] Text, control and image contrast checked
 - [ ] 320px reflow, 200% zoom and long content tested
-- [ ] Uploads, consent and legal policy reviewed with owner (18+ site / 21+ events — confirm)
+- [ ] Uploads, consent and legal policy reviewed with owner (site and events are 18+)

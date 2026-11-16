@@ -19,14 +19,20 @@ export function proxy(request: NextRequest) {
   if (pathname === AGE_GATE_PATH) {
     if (!verified) return NextResponse.next();
     const next = safeNextPath(request.nextUrl.searchParams.get("next"));
-    return NextResponse.redirect(new URL(next, request.url));
+    return noStore(NextResponse.redirect(new URL(next, request.url)));
   }
 
   if (verified || AGE_GATE_PUBLIC_PATHS.includes(pathname)) return NextResponse.next();
 
   const gate = new URL(AGE_GATE_PATH, request.url);
   if (pathname !== "/") gate.searchParams.set("next", `${pathname}${search}`);
-  return NextResponse.redirect(gate);
+  return noStore(NextResponse.redirect(gate));
+}
+
+// These redirects depend on the visitor's cookie, so no browser or CDN may reuse them for someone else.
+function noStore(response: NextResponse) {
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
 }
 
 export const config = {
